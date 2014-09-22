@@ -1,0 +1,7 @@
+h1.logo {
+  margin: 0 auto 0 auto;
+  background: url('../img/logo.png');
+  background-repeat: no-repeat;
+  width: 300px;
+  height: 200px;
+}

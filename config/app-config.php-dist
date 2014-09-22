@@ -1,0 +1,6 @@
+<?php
+
+// Config settings
+define('STRIPE_REQUIRE_HTTPS', true);
+define('STRIPE_API_KEY', 'sk_test_abcdefghijklmnop');
+define('STRIPE_PUBLISHABLE_KEY', 'pk_test_abcdefghijklmnop');

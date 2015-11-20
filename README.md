@@ -4,17 +4,18 @@ A donations form to run on your own site. It works great on mobile handsets as w
 
 ## Who Should Use It
 
-This project is ideal for non-profits and political campaigns that need on-site donations. Note that it any page that processes finanancial data should be served over SSL (`https://`).
+This project is ideal for non-profits and political campaigns that need on-site donations. Note that it any page that processes financial data should be served over SSL (`https://`).
 
 ## Quick Start
 
-1. Copy `config/app-config.php-dist` to `app-config.php` and complete with your Stripe API keys
-2. Update the Google Analytics code in `index.php` to properly track for your site (or remove it entirely)
-3. Replace `assets/img/logo.png` with something more meaningful
-4. Test everything! (no money is processed in test mode)
-5. Switch your Stripe API keys to the production set
-6. Switch your Stripe account to Live mode
-7. Test everything! (small dollar amounts, as these are actually processed)
+1. From the root directory of the downloaded or cloned repository, run `composer install` to get the necessary library. If you are not familiar with Composer, [start here](http://getcomposer.org).
+2. Copy `config/app-config.php-dist` to `app-config.php` and complete with your Stripe API keys
+3. Update the Google Analytics code in `index.php` to properly track for your site (or remove it entirely)
+4. Replace `assets/img/logo.png` with something more meaningful
+5. Test everything! (no money is processed in test mode)
+7. Switch your Stripe API keys to the production set
+8. Switch your Stripe account to Live mode
+8. Test everything! (small dollar amounts, as these are actually processed)
 
 ## Customizing
 

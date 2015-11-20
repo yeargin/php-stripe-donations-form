@@ -18,7 +18,7 @@ if (STRIPE_REQUIRE_HTTPS === true && $_SERVER['HTTPS'] != 'on') {
 require_once 'vendor/autoload.php';
 
 if ($_POST) {
-  Stripe::setApiKey(STRIPE_API_KEY);
+  \Stripe\Stripe::setApiKey(STRIPE_API_KEY);
   $error = '';
   $success = '';
   try {
@@ -32,7 +32,7 @@ if ($_POST) {
     if (!$_POST['name'] || !$_POST['address'] || !$_POST['employer']) {
       throw new Exception("We must collect your name, address and employer to comply with the law.");
     }
-    Stripe_Charge::create(
+    \Stripe\Charge::create(
       array(
         "amount" => $amount * 100,
         "description" => sprintf('%s - $%s on %s', $_POST['name'], number_format($_POST['amount'],2), date('m/d/Y')),

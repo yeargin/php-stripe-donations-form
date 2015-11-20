@@ -26,4 +26,4 @@ The form on the landing page interacts with the Stripe JavaScript API to obtain 
 
 ## Questions or issues?
 
-Simply [file an issue]() on our GitHub project.
+Simply [file an issue](https://github.com/yeargin/php-stripe-donations-form/issues) on our GitHub project.

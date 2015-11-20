@@ -13,8 +13,8 @@ This project is ideal for non-profits and political campaigns that need on-site 
 3. Update the Google Analytics code in `index.php` to properly track for your site (or remove it entirely)
 4. Replace `assets/img/logo.png` with something more meaningful
 5. Test everything! (no money is processed in test mode)
-7. Switch your Stripe API keys to the production set
-8. Switch your Stripe account to Live mode
+6. Switch your Stripe API keys to the production set
+7. Switch your Stripe account to Live mode
 8. Test everything! (small dollar amounts, as these are actually processed)
 
 ## Customizing

@@ -1,3 +1,5 @@
+![screenshot](https://user-images.githubusercontent.com/80459/28901146-cce9efe2-77bb-11e7-8acc-28538607b85a.png)
+
 # PHP Donations Form
 
 A donations form to run on your own site. It works great on mobile handsets as well because it is powered by the [Bootstrap](http://getbootstrap.com) responsive framework. Requires an active Stripe account for use.

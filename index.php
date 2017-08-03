@@ -17,8 +17,10 @@ if (STRIPE_REQUIRE_HTTPS === true && $_SERVER['HTTPS'] != 'on') {
 // Composer
 require_once 'vendor/autoload.php';
 
+$submitted = false;
 if ($_POST) {
   \Stripe\Stripe::setApiKey(STRIPE_API_KEY);
+  $submitted = true;
   $error = '';
   $success = '';
   try {
@@ -32,24 +34,25 @@ if ($_POST) {
     if (!$_POST['name'] || !$_POST['address'] || !$_POST['employer']) {
       throw new Exception("We must collect your name, address and employer to comply with the law.");
     }
-    \Stripe\Charge::create(
-      array(
-        "amount" => $amount * 100,
-        "description" => sprintf('%s - $%s on %s', $_POST['name'], number_format($_POST['amount'],2), date('m/d/Y')),
-        "currency" => "usd",
-        "card" => $_POST['stripeToken'],
-        "metadata" => array(
-          "name" => $_POST['name'],
-          "address" => $_POST['address'],
-          "city" => $_POST['city'],
-          "state" => $_POST['state'],
-          "zip" => $_POST['zip'],
-          "employer" => $_POST['employer'],
-          "occupation" => $_POST['occupation']
-        ),
-        "receipt_email" => $_POST['email']
-      )
+    $charge = array(
+      'amount' => $amount * 100,
+      'description' => sprintf('%s - $%s on %s', $_POST['name'], number_format($_POST['amount'],2), date('m/d/Y')),
+      'currency' => "usd",
+      'card' => $_POST['stripeToken'],
+      'metadata' => array(
+        'name' => $_POST['name'],
+        'address' => $_POST['address'],
+        'city' => $_POST['city'],
+        'state' => $_POST['state'],
+        'zip' => $_POST['zip'],
+        'employer' => $_POST['employer'],
+        'occupation' => $_POST['occupation']
+      ),
     );
+    if ($_POST['email']) {
+      $charge['receipt_email'] = $_POST['email'];
+    }
+    \Stripe\Charge::create($charge);
     $success = true;
   }
   catch (Exception $e) {
@@ -173,7 +176,7 @@ ga('send', 'event', 'donate', 'success', '<?php echo htmlentities(addslashes($_P
           <h1 class="logo">
             <span class="sr-only">Campaign Logo</span>
           </h1>
-          <?php if (!$success && !$error): ?>
+          <?php if (!$submitted || (!$success && !$error)): ?>
           <form class="require-validation" data-cc-on-file="false" data-stripe-publishable-key="<?php echo STRIPE_PUBLISHABLE_KEY; ?>" id="payment-form" method="post">
             <div class="row">
               <div class='col-xs-12 form-group required'>

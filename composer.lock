@@ -1,36 +1,36 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "hash": "629af05b676495c9ed88213260b6b2f5",
-    "content-hash": "25c4d84cbf778d26e3801ff0991ca74c",
+    "content-hash": "7f2915fc45484e688b3e18d05605953e",
     "packages": [
         {
             "name": "stripe/stripe-php",
-            "version": "v3.4.0",
+            "version": "v6.39.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stripe/stripe-php.git",
-                "reference": "c22eb5b8d5a3549c3bf83302fbbbc9ff49e2842c"
+                "reference": "2e8cf31da233bd5e9c281f20447cbd4810c07e9e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/c22eb5b8d5a3549c3bf83302fbbbc9ff49e2842c",
-                "reference": "c22eb5b8d5a3549c3bf83302fbbbc9ff49e2842c",
+                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/2e8cf31da233bd5e9c281f20447cbd4810c07e9e",
+                "reference": "2e8cf31da233bd5e9c281f20447cbd4810c07e9e",
                 "shasum": ""
             },
             "require": {
                 "ext-curl": "*",
                 "ext-json": "*",
                 "ext-mbstring": "*",
-                "php": ">=5.3.3"
+                "php": ">=5.4.0"
             },
             "require-dev": {
+                "php-coveralls/php-coveralls": "1.*",
                 "phpunit/phpunit": "~4.0",
-                "satooshi/php-coveralls": "~0.6.1",
-                "squizlabs/php_codesniffer": "~2.0"
+                "squizlabs/php_codesniffer": "~2.0",
+                "symfony/process": "~2.8"
             },
             "type": "library",
             "extra": {
@@ -60,7 +60,7 @@
                 "payment processing",
                 "stripe"
             ],
-            "time": "2015-09-14 23:29:09"
+            "time": "2019-06-26T17:10:28+00:00"
         }
     ],
     "packages-dev": [],

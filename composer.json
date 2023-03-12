@@ -1,5 +1,5 @@
 {
   "require": {
-    "stripe/stripe-php": "^6.41"
+    "stripe/stripe-php": "^v10.9.0"
   }
 }

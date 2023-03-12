@@ -17,6 +17,7 @@ if (STRIPE_REQUIRE_HTTPS === true && $_SERVER['HTTPS'] != 'on') {
 // Composer
 require_once 'vendor/autoload.php';
 
+$success = null;
 $submitted = false;
 if ($_POST) {
   \Stripe\Stripe::setApiKey(STRIPE_API_KEY);
@@ -68,10 +69,13 @@ if ($_POST) {
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Support Our Campaign</title>
-<meta name="description" content="Securely contribute to our campaign." />
-<script type="text/javascript" src="//js.stripe.com/v2/"></script>
-<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-<script type="text/javascript">
+<meta name="description" content="Securely contribute to our campaign.">
+<script src="//js.stripe.com/v2/"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+
+<script>
 $(function() {
   $('form.require-validation').bind('submit', function(e) {
     var $form         = $(e.target).closest('form'),
@@ -132,9 +136,10 @@ $(function() {
   });
 
   function stripeResponseHandler(status, response) {
+    console.log(response);
     if (response.error) {
       $('.error')
-        .removeClass('hide')
+        .removeClass('collapse')
         .find('.alert')
         .text(response.error.message);
     } else {
@@ -142,7 +147,7 @@ $(function() {
       var token = response['id'];
       // insert the token into the form so it gets submitted to the server
       $form.find('input[type=text]').empty();
-      $form.append("<input type='hidden' name='stripeToken' value='" + token + "'/>");
+      $form.append("<input type='hidden' name='stripeToken' value='" + token + "'>");
       $form.get(0).submit();
     }
   }
@@ -155,170 +160,173 @@ $(function() {
 m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-ga('create', 'UA-000000-00', 'auto');
+ga('create', '<?php echo GOOGLE_ANALYTICS_ID; ?>', 'auto');
 ga('send', 'pageview');
 <?php if ($success): ?>
 ga('send', 'event', 'donate', 'success', '<?php echo htmlentities(addslashes($_POST['email'])); ?>', <?php echo $amount; ?>);
 <?php endif; ?>
 </script>
 
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" />
-
-<link rel="stylesheet" href="assets/css/donation-form.css" />
+<link rel="stylesheet" href="assets/css/donation-form.css">
 
 </head>
 <body>
 
 <div class="container">
-    <div class='row'>
-        <div class='col-lg-offset-3 col-lg-6'>
-          <h1 class="logo">
-            <span class="sr-only">Campaign Logo</span>
-          </h1>
-          <?php if (!$submitted || (!$success && !$error)): ?>
-          <form class="require-validation" data-cc-on-file="false" data-stripe-publishable-key="<?php echo STRIPE_PUBLISHABLE_KEY; ?>" id="payment-form" method="post">
-            <div class="row">
-              <div class='col-xs-12 form-group required'>
-                <label class="control-label">Full Name</label>
-                <input class='form-control card-name' size="4" name="name" type="text" required>
+  <div class="row mb-3">
+    <div class="col-12 col-md-6 offset-0 offset-md-3">
+      <h1 class="logo my-3">
+        <span class="sr-only">Campaign Logo</span>
+      </h1>
+      <?php if (!$submitted || (!$success && !$error)): ?>
+      <form class="require-validation" data-cc-on-file="false" data-stripe-publishable-key="<?php echo STRIPE_PUBLISHABLE_KEY; ?>" id="payment-form" method="post">
+        <div class="row g-3">
+          <div class="col-12 form-group required">
+            <label class="form-label">Full Name</label>
+            <input class="form-control card-name" size="4" name="name" type="text" required>
+          </div>
+
+          <div class="col-12 form-group required">
+            <label class="form-label">Address</label>
+            <input class="form-control" size="4" name="address" type="text" required>
+          </div>
+
+          <div class="col-4 form-group required">
+            <label class="form-label">City</label>
+            <input class="form-control" size="4" name="city" type="text" required>
+          </div>
+          <div class="col-4 form-group required">
+            <label class="form-label">State</label>
+            <input class="form-control" size="4" name="state" type="text" required>
+          </div>
+          <div class="col-4 form-group required">
+            <label class="form-label">Zip Code</label>
+            <input class="form-control" size="4" name="zip" type="text" required>
+          </div>
+
+          <div class="col-12">
+            <hr>
+          </div>
+
+          <div class="col-12 form-group required">
+            <label class="form-label">Card Number</label>
+            <input autocomplete="off" class="form-control card-number" size="20" type="text" required>
+          </div>
+
+          <div class="col-4 form-group cvc required">
+            <label class="form-label">CVC</label>
+            <input autocomplete="off" class="form-control card-cvc" placeholder="ex. 311" size="4" type="text" required>
+          </div>
+          <div class="col-4 form-group expiration required">
+            <label class="form-label">Expiration</label>
+            <input class="form-control card-expiry-month" placeholder="MM" size="2" type="text" required>
+          </div>
+          <div class="col-4 form-group expiration required">
+            <label class="form-label">&nbsp;</label>
+            <input class="form-control card-expiry-year" placeholder="YYYY" size="4" type="text" required>
+          </div>
+          <div class="col-12">
+            <div class="card mb-3">
+              <div class="card-header">
+                <span class="card-title">Choose an Amount</span>
               </div>
-            </div>
-            <div class="row">
-              <div class="col-xs-12 form-group required">
-                <label class="control-label">Addresss</label>
-                <input class='form-control' size="4" name="address" type="text" required>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-xs-4 form-group required">
-                <label class="control-label">City</label>
-                <input class='form-control' size="4" name="city" type="text" required>
-              </div>
-              <div class="col-xs-4 form-group required">
-                <label class="control-label">State</label>
-                <input class='form-control' size="4" name="state" type="text" required>
-              </div>
-              <div class="col-xs-4 form-group required">
-                <label class="control-label">Zip Code</label>
-                <input class='form-control' size="4" name="zip" type="text" required>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-xs-12">
-                <hr />
-              </div>
-            </div>
-            <div class="row">
-              <div class='col-xs-12 form-group card required'>
-                <label class="control-label">Card Number</label>
-                <input autocomplete="off" class="form-control card-number" size="20" type="text" required>
-              </div>
-            </div>
-            <div class="row">
-              <div class='col-xs-4 form-group cvc required'>
-                <label class="control-label">CVC</label>
-                <input autocomplete="off" class="form-control card-cvc" placeholder="ex. 311" size="4" type="text" required>
-              </div>
-              <div class='col-xs-4 form-group expiration required'>
-                <label class="control-label">Expiration</label>
-                <input class='form-control card-expiry-month' placeholder='MM' size="2" type="text" required>
-              </div>
-              <div class='col-xs-4 form-group expiration required'>
-                <label class="control-label">&nbsp;</label>
-                <input class='form-control card-expiry-year' placeholder='YYYY' size="4" type="text" required>
-              </div>
-            </div>
-            <div class="row">
-              <div class='col-xs-12'>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <span class="panel-title">Choose an Amount</span>
-                    </div>
-                    <div class="panel-body">
-                      <div id="auto_select">
-                          <label class="radio-inline">
-                            <input type="radio" name="auto_select" id="auto_1" value="25" checked="checked"> $25
-                          </label>
-                          <label class="radio-inline">
-                            <input type="radio" name="auto_select" id="auto_2" value="50"> $50
-                          </label>
-                          <label class="radio-inline">
-                            <input type="radio" name="auto_select" id="auto_3" value="100"> $100
-                          </label>
-                          <!-- <br /> -->
-                          <label class="radio-inline">
-                            <input type="radio" name="auto_select" id="auto_4" value="250"> $250
-                          </label>
-                          <label class="radio-inline">
-                            <input type="radio" name="auto_select" id="other" value="other"> Other
-                          </label>
-                      </div>
-                      <div id="other_amount" class="collapse">
-                          <div class="input-group input-group-lg">
-                            <span class="input-group-addon">$</span>
-                            <input type="text" class="form-control" style="text-align:right" name="amount" id="amount" value="25">
-                            <span class="input-group-addon">.00</span>
-                          </div>
-                      </div>
-                    </div>
+              <div class="card-body">
+                <div id="auto_select">
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="auto_select" id="auto_1" value="25">
+                    <label class="form-check-label" for="auto_1">$25</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="auto_select" id="auto_2" value="50">
+                    <label class="form-check-label" for="auto_2">$50</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="auto_select" id="auto_3" value="100">
+                    <label class="form-check-label" for="auto_3">$100</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="auto_select" id="auto_4" value="250">
+                    <label class="form-check-label" for="auto_4">$250</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="auto_select" id="other" value="other">
+                    <label class="form-check-label" for="other">Other</label>
+                  </div>
+                </div>
+                <div id="other_amount" class="collapse">
+                  <div class="input-group input-group-lg">
+                    <span class="input-group-text">$</span>
+                    <input type="text" class="form-control" style="text-align:right" name="amount" id="amount" value="25">
+                    <span class="input-group-text">.00</span>
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="row">
-              <div class="col-xs-6 form-group required">
-                <label class="control-label">Employer</label>
-                <input class='form-control' size="4" name="employer" type="text" required>
-              </div>
-              <div class='col-xs-6 form-group'>
-                <label class="control-label">Occupation</label>
-                <input class='form-control' size="4" name="occupation" type="text">
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-xs-12 form-group required">
-                <label class="control-label">Email (for receipt)</label>
-                <input class='form-control' size="4" name="email" type="text">
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-xs-12 form-group">
-                <button class="btn btn-primary btn-lg submit-button" style="width: 100%;" type="submit">Donate</button>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-xs-12 error form-group hide">
-                <div class="alert-danger alert">
-                  Please correct the errors and try again.
-                </div>
-              </div>
-            </div>
-          </form>
-          <?php elseif ($success): ?>
-          <div class="alert alert-success">
-            <h2>Thank you for your support!</h2>
-            <p>We're processing your contribution to our campaign. Thank you for your support!</p>
-          </div>
-          <?php else: ?>
-          <div class="alert alert-danger">
-            <h2>We could not process your contribution.</h2>
-            <p><?php echo $error; ?></p>
-            <p><a href="/donate" class="btn btn-default">Try Again</a></p>
-          </div>
-          <?php endif; ?>
-          <div class="footer">
-            <p class="small">Contributions are not tax deductible. Contributions may only be received from U.S. residents. The person making this contribution agrees that they are at least 18 years of age and that this contribution is made from their own funds and not those of another.</p>
-            <p class="footer-credit">
-              Paid for by Friends of Our Campaign<br />
-              Jane Doe, Treasurer.
-            </p>
           </div>
         </div>
-    </div>
-</div>
 
-<!-- Latest compiled and minified JavaScript -->
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+        <div class="row mb-3">
+          <div class="col-6">
+            <div class="form-group required">
+              <label class="form-label">Employer</label>
+              <input class="form-control" size="4" name="employer" type="text" required>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="form-group">
+              <label class="form-label">Occupation</label>
+              <input class="form-control" size="4" name="occupation" type="text">
+            </div>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-12">
+            <div class="form-group required">
+              <label class="form-label">Email (for receipt)</label>
+              <input class="form-control" size="4" name="email" type="text">
+            </div>
+          </div>
+        </div>
+
+        <div class="error col-12 error form-group collapse">
+          <div class="alert alert-danger">
+            Please correct the errors and try again.
+          </div>
+        </div>
+
+        <div class="col-12 form-group mb-3">
+          <button class="btn btn-primary btn-lg submit-button" style="width: 100%;" type="submit">Donate</button>
+        </div>
+
+        <?php elseif ($success): ?>
+        <div class="card border-success mb-3">
+          <div class="card-header text-bg-danger h4">Thank you for your support!</div>
+          <div class="card-body">
+            <p>We're processing your contribution to our campaign. Thank you for your support!</p>
+            <p><a href="/" class="btn btn-primary">Back to Website</a></p>
+          </div>
+        </div>
+        <?php else: ?>
+        <div class="card border-danger mb-3">
+          <div class="card-header text-bg-danger h4">We could not process your contribution.</div>
+          <div class="card-body">
+            <p class="alert alert-danger"><strong>Error:</strong> <?php echo $error; ?></p>
+            <p><a href="/donate" class="btn btn-primary">Try Again</a></p>
+          </div>
+        </div>
+        <?php endif; ?>
+        <footer>
+          <p class="small">Contributions are not tax deductible. Contributions may only be received from U.S. residents. The person making this contribution agrees that they are at least 18 years of age and that this contribution is made from their own funds and not those of another.</p>
+          <hr>
+          <p class="footer-credit text-center">
+            Paid for by Friends of Our Campaign<br>
+            Jane Doe, Treasurer.
+          </p>
+        </footer>
+      </form>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>

@@ -154,19 +154,6 @@ $(function() {
 });
 </script>
 
-<script>
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-ga('create', '<?php echo GOOGLE_ANALYTICS_ID; ?>', 'auto');
-ga('send', 'pageview');
-<?php if ($success): ?>
-ga('send', 'event', 'donate', 'success', '<?php echo htmlentities(addslashes($_POST['email'])); ?>', <?php echo $amount; ?>);
-<?php endif; ?>
-</script>
-
 <link rel="stylesheet" href="assets/css/donation-form.css">
 
 </head>
@@ -175,9 +162,9 @@ ga('send', 'event', 'donate', 'success', '<?php echo htmlentities(addslashes($_P
 <div class="container">
   <div class="row mb-3">
     <div class="col-12 col-md-6 offset-0 offset-md-3">
-      <h1 class="logo my-3">
-        <span class="sr-only">Campaign Logo</span>
-      </h1>
+      <div class="logo text-center my-3">
+        <img src="./assets/img/logo.png" class="img-fluid" alt="Campaign Logo" />
+      </div>
       <?php if (!$submitted || (!$success && !$error)): ?>
       <form class="require-validation" data-cc-on-file="false" data-stripe-publishable-key="<?php echo STRIPE_PUBLISHABLE_KEY; ?>" id="payment-form" method="post">
         <div class="row g-3">
@@ -264,6 +251,8 @@ ga('send', 'event', 'donate', 'success', '<?php echo htmlentities(addslashes($_P
             </div>
           </div>
         </div>
+
+        <hr>
 
         <div class="row mb-3">
           <div class="col-6">

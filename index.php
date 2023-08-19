@@ -1,17 +1,17 @@
 <?php
 
 if (file_exists('config/app-config.php')) {
-  require_once 'config/app-config.php';
+    require_once 'config/app-config.php';
 } else {
-  print 'Missing config/app-config.php';
-  exit;
+    print 'Missing config/app-config.php';
+    exit;
 }
 
 // Force HTTPS connections
 if (STRIPE_REQUIRE_HTTPS === true && $_SERVER['HTTPS'] != 'on') {
-  header("HTTP/1.1 301 Moved Permanently");
-  header("Location: https://" . $_SERVER["SERVER_NAME"] . $_SERVER["REQUEST_URI"]);
-  exit();
+    header("HTTP/1.1 301 Moved Permanently");
+    header("Location: https://" . $_SERVER["SERVER_NAME"] . $_SERVER["REQUEST_URI"]);
+    exit();
 }
 
 // Composer
@@ -20,45 +20,44 @@ require_once 'vendor/autoload.php';
 $success = null;
 $submitted = false;
 if ($_POST) {
-  \Stripe\Stripe::setApiKey(STRIPE_API_KEY);
-  $submitted = true;
-  $error = '';
-  $success = '';
-  try {
-    $amount = (int) $_POST['amount'];
-    if (!isset($_POST['stripeToken'])) {
-      throw new Exception("An error occurred processing your donation. Please try again.");
+    \Stripe\Stripe::setApiKey(STRIPE_API_KEY);
+    $submitted = true;
+    $error = '';
+    $success = '';
+    try {
+        $amount = (int) $_POST['amount'];
+        if (!isset($_POST['stripeToken'])) {
+            throw new Exception("An error occurred processing your donation. Please try again.");
+        }
+        if ($amount < 1 || $amount > 2600) {
+            throw new Exception("Online donations must be greater than $1 and less than or equal to $2,600.");
+        }
+        if (!$_POST['name'] || !$_POST['address'] || !$_POST['employer']) {
+            throw new Exception("We must collect your name, address and employer to comply with the law.");
+        }
+        $charge = array(
+          'amount' => $amount * 100,
+          'description' => sprintf('%s - $%s on %s', $_POST['name'], number_format($_POST['amount'], 2), date('m/d/Y')),
+          'currency' => "usd",
+          'card' => $_POST['stripeToken'],
+          'metadata' => array(
+            'name' => $_POST['name'],
+            'address' => $_POST['address'],
+            'city' => $_POST['city'],
+            'state' => $_POST['state'],
+            'zip' => $_POST['zip'],
+            'employer' => $_POST['employer'],
+            'occupation' => $_POST['occupation']
+          ),
+        );
+        if ($_POST['email']) {
+            $charge['receipt_email'] = $_POST['email'];
+        }
+        \Stripe\Charge::create($charge);
+        $success = true;
+    } catch (Exception $e) {
+        $error = $e->getMessage();
     }
-    if ($amount < 1 || $amount > 2600) {
-      throw new Exception("Online donations must be greater than $1 and less than or equal to $2,600.");
-    }
-    if (!$_POST['name'] || !$_POST['address'] || !$_POST['employer']) {
-      throw new Exception("We must collect your name, address and employer to comply with the law.");
-    }
-    $charge = array(
-      'amount' => $amount * 100,
-      'description' => sprintf('%s - $%s on %s', $_POST['name'], number_format($_POST['amount'],2), date('m/d/Y')),
-      'currency' => "usd",
-      'card' => $_POST['stripeToken'],
-      'metadata' => array(
-        'name' => $_POST['name'],
-        'address' => $_POST['address'],
-        'city' => $_POST['city'],
-        'state' => $_POST['state'],
-        'zip' => $_POST['zip'],
-        'employer' => $_POST['employer'],
-        'occupation' => $_POST['occupation']
-      ),
-    );
-    if ($_POST['email']) {
-      $charge['receipt_email'] = $_POST['email'];
-    }
-    \Stripe\Charge::create($charge);
-    $success = true;
-  }
-  catch (Exception $e) {
-    $error = $e->getMessage();
-  }
 }
 
 ?>
@@ -71,7 +70,7 @@ if ($_POST) {
 <title>Support Our Campaign</title>
 <meta name="description" content="Securely contribute to our campaign.">
 <script src="//js.stripe.com/v2/"></script>
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
 
@@ -170,25 +169,25 @@ $(function() {
         <div class="row g-3">
           <div class="col-12 form-group required">
             <label class="form-label">Full Name</label>
-            <input class="form-control card-name" size="4" name="name" type="text" required>
+            <input class="form-control card-name" size="4" name="name" type="text" autocomplete="cc-name" required />
           </div>
 
           <div class="col-12 form-group required">
             <label class="form-label">Address</label>
-            <input class="form-control" size="4" name="address" type="text" required>
+            <input class="form-control" size="4" name="address" type="text" autocomplete="street-address" required />
           </div>
 
           <div class="col-4 form-group required">
             <label class="form-label">City</label>
-            <input class="form-control" size="4" name="city" type="text" required>
+            <input class="form-control" size="4" name="city" type="text" autocomplete="address-level2" required />
           </div>
           <div class="col-4 form-group required">
             <label class="form-label">State</label>
-            <input class="form-control" size="4" name="state" type="text" required>
+            <input class="form-control" size="4" name="state" type="text" autocomplete="address-level1" required />
           </div>
           <div class="col-4 form-group required">
             <label class="form-label">Zip Code</label>
-            <input class="form-control" size="4" name="zip" type="text" required>
+            <input class="form-control" size="4" name="zip" type="text" autocomplete="postal-code" required />
           </div>
 
           <div class="col-12">
@@ -197,20 +196,20 @@ $(function() {
 
           <div class="col-12 form-group required">
             <label class="form-label">Card Number</label>
-            <input autocomplete="off" class="form-control card-number" size="20" type="text" required>
+            <input autocomplete="off" class="form-control card-number" size="20" type="text" autocomplete="cc-number" required />
           </div>
 
           <div class="col-4 form-group cvc required">
             <label class="form-label">CVC</label>
-            <input autocomplete="off" class="form-control card-cvc" placeholder="ex. 311" size="4" type="text" required>
+            <input autocomplete="off" class="form-control card-cvc" placeholder="ex. 311" size="4" type="text" autocomplete="cc-csc" required />
           </div>
           <div class="col-4 form-group expiration required">
             <label class="form-label">Expiration</label>
-            <input class="form-control card-expiry-month" placeholder="MM" size="2" type="text" required>
+            <input class="form-control card-expiry-month" placeholder="MM" size="2" type="text" autocomplete="cc-exp-month" required />
           </div>
           <div class="col-4 form-group expiration required">
             <label class="form-label">&nbsp;</label>
-            <input class="form-control card-expiry-year" placeholder="YYYY" size="4" type="text" required>
+            <input class="form-control card-expiry-year" placeholder="YYYY" size="4" type="text" autocomplete="cc-exp-year" required />
           </div>
           <div class="col-12">
             <div class="card mb-3">
@@ -220,30 +219,30 @@ $(function() {
               <div class="card-body">
                 <div id="auto_select">
                   <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="auto_select" id="auto_1" value="25">
+                    <input class="form-check-input" type="radio" name="auto_select" id="auto_1" value="25" />
                     <label class="form-check-label" for="auto_1">$25</label>
                   </div>
                   <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="auto_select" id="auto_2" value="50">
+                    <input class="form-check-input" type="radio" name="auto_select" id="auto_2" value="50" />
                     <label class="form-check-label" for="auto_2">$50</label>
                   </div>
                   <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="auto_select" id="auto_3" value="100">
+                    <input class="form-check-input" type="radio" name="auto_select" id="auto_3" value="100" />
                     <label class="form-check-label" for="auto_3">$100</label>
                   </div>
                   <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="auto_select" id="auto_4" value="250">
+                    <input class="form-check-input" type="radio" name="auto_select" id="auto_4" value="250" />
                     <label class="form-check-label" for="auto_4">$250</label>
                   </div>
                   <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="auto_select" id="other" value="other">
+                    <input class="form-check-input" type="radio" name="auto_select" id="other" value="other" />
                     <label class="form-check-label" for="other">Other</label>
                   </div>
                 </div>
                 <div id="other_amount" class="collapse">
                   <div class="input-group input-group-lg">
                     <span class="input-group-text">$</span>
-                    <input type="text" class="form-control" style="text-align:right" name="amount" id="amount" value="25">
+                    <input type="text" class="form-control" style="text-align:right" name="amount" id="amount" value="25" />
                     <span class="input-group-text">.00</span>
                   </div>
                 </div>
@@ -258,13 +257,13 @@ $(function() {
           <div class="col-6">
             <div class="form-group required">
               <label class="form-label">Employer</label>
-              <input class="form-control" size="4" name="employer" type="text" required>
+              <input class="form-control" size="4" name="employer" type="text" autocomplete="organization" required>
             </div>
           </div>
           <div class="col-6">
             <div class="form-group">
               <label class="form-label">Occupation</label>
-              <input class="form-control" size="4" name="occupation" type="text">
+              <input class="form-control" size="4" name="occupation" autocomplete="organization-title" type="text">
             </div>
           </div>
         </div>
@@ -272,7 +271,7 @@ $(function() {
           <div class="col-12">
             <div class="form-group required">
               <label class="form-label">Email (for receipt)</label>
-              <input class="form-control" size="4" name="email" type="text">
+              <input class="form-control" size="4" name="email" autocomplete="email" type="text">
             </div>
           </div>
         </div>
